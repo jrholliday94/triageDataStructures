@@ -21,10 +21,34 @@ public class PatientOp {
 	}
 
 	/**
+	 * @return the time
+	 */
+	public int getTime() {
+		return time;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
 	 * @return the cost
 	 */
 	public double getCost() {
 		return cost;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return this.description;
 	}
 
 }

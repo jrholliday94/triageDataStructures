@@ -13,9 +13,12 @@ import javax.swing.JFrame;
 
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.awt.event.ActionEvent;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 public class PatientEntry extends JPanel {
 	private JTextField enteredName;
@@ -76,7 +79,49 @@ public class PatientEntry extends JPanel {
 		billLabel.setBorder(border);
 		add(billLabel);
 
+		JList<PatientOp> patientOpList = new JList<PatientOp>();
+		patientOpList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		patientOpList.setBackground(Color.WHITE);
+		patientOpList.setBounds(397, 10, 127, 121);
+		add(patientOpList);
+
 		JList patientQueue = new JList();
+		patientQueue.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent arg0) {
+				// On selection change load up operation list of selected patient
+				String selectedName = (String) patientQueue.getSelectedValue();
+
+				// Check linkedlist to match patient name
+				for (int i = 0; i < patientList.size(); i++) {
+
+					// If name matches, retrieve queue of operations for selected patient
+					if (patientList.get(i).getName().toLowerCase().equals(selectedName.toLowerCase())) {
+						// Make fields match selected patient
+
+						enteredName.setText(patientList.get(i).getName());
+						enteredAge.setText(Integer.toString(patientList.get(i).getAge()));
+						enteredWeight.setText(Double.toString(patientList.get(i).getWeight()));
+						enteredHeight.setText(Double.toString(patientList.get(i).getHeight()));
+
+						// Create new queue to hold operations
+						Queue<PatientOp> operations = patientList.get(i).getOperations();
+
+						DefaultListModel listModel = new DefaultListModel();
+
+						// Iterate through operation queue
+						for (Object PatientOp : operations) {
+							// For some reason only .tostring works in here.. Works for my purposes though.
+							listModel.addElement(PatientOp.toString());
+
+						}
+
+						// Refresh JList contents
+						patientOpList.setModel(listModel);
+					}
+				}
+
+			}
+		});
 		patientQueue.setBackground(new Color(255, 255, 255));
 		patientQueue.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		patientQueue.setBounds(225, 10, 150, 121);
@@ -148,15 +193,43 @@ public class PatientEntry extends JPanel {
 		btnAddPatient.setBounds(10, 139, 205, 23);
 		add(btnAddPatient);
 
-		JButton btnOperateOnPatient = new JButton("Operate on Patient");
-		btnOperateOnPatient.setBounds(396, 139, 127, 23);
-		add(btnOperateOnPatient);
+		JButton btnOperateOnPatient = new JButton("Operate");
+		btnOperateOnPatient.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Remove head of operation list queue
+				String selectedName = (String) patientQueue.getSelectedValue();
 
-		JList<PatientOp> patientOpList = new JList<PatientOp>();
-		patientOpList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		patientOpList.setBackground(Color.WHITE);
-		patientOpList.setBounds(397, 10, 127, 121);
-		add(patientOpList);
+				// Check linkedlist to match patient name
+				for (int i = 0; i < patientList.size(); i++) {
+
+					// If name matches, retrieve queue of operations for selected patient
+					if (patientList.get(i).getName().toLowerCase().equals(selectedName.toLowerCase())) {
+						// Create new queue to hold operations
+						Queue<PatientOp> operations = patientList.get(i).getOperations();
+
+						DefaultListModel listModel = new DefaultListModel();
+
+						// Remove operations list head
+						operations.remove();
+
+						// Iterate through operation queue
+						for (Object PatientOp : operations) {
+							// For some reason only .tostring works in here.. Works for my purposes though.
+							listModel.addElement(PatientOp.toString());
+
+						}
+
+						// Refresh JList contents
+						patientOpList.setModel(listModel);
+					}
+				}
+
+			}
+
+		});
+		btnOperateOnPatient.setBounds(396, 139, 127, 23);
+
+		add(btnOperateOnPatient);
 
 		JButton btnAddOperation = new JButton("Add Operation");
 		btnAddOperation.addActionListener(new ActionListener() {

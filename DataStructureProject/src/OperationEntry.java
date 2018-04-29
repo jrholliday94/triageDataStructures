@@ -78,7 +78,7 @@ public class OperationEntry extends JPanel {
 					operationDesc.setText("");
 					operationCost.setText("");
 					System.out.println("Operation added");
-					System.exit(0);
+
 				}
 
 			}
